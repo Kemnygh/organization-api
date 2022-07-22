@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'ke.co.safaricom'
+version '1.0-SNAPSHOT'
+
+mainClassName = 'App'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'org.junit.jupiter:junit-jupiter-migrationsupport:5.8.2'
+    implementation 'org.sql2o:sql2o:1.6.0'
+    implementation 'org.sql2o:sql2o-parent:1.6.0'
+    implementation 'com.sparkjava:spark-core:2.9.3'
+    implementation 'com.sparkjava:spark-template-handlebars:2.7.1'
+    implementation 'org.slf4j:slf4j-simple:1.7.36' //to ensure easy to read logging.
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.6' // ADD ME FOR POSTGRES VERSION 10.x
+    implementation 'com.google.code.gson:gson:2.9.0'
+}
+
+test {
+    useJUnitPlatform()
+}
