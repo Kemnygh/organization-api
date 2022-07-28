@@ -8,8 +8,8 @@ public class Post {
     private String content;
     private int userId;
     private int departmentId;
-    private Timestamp created;
-    private Timestamp updated;
+    private long created;
+    private long updated;
     private int id;
     private String deleted;
 
@@ -25,7 +25,7 @@ public class Post {
         if (this == o) return true;
         if (!(o instanceof Post)) return false;
         Post post = (Post) o;
-        return getUserId() == post.getUserId() && getDepartmentId() == post.getDepartmentId() && getId() == post.getId() && getTitle().equals(post.getTitle()) && getContent().equals(post.getContent()) && getCreated().equals(post.getCreated()) && Objects.equals(getUpdated(), post.getUpdated()) && getDeleted().equals(post.getDeleted());
+        return getUserId() == post.getUserId() && getDepartmentId() == post.getDepartmentId() && getCreated() == post.getCreated() && getUpdated() == post.getUpdated() && getId() == post.getId() && getTitle().equals(post.getTitle()) && getContent().equals(post.getContent()) && getDeleted().equals(post.getDeleted());
     }
 
     @Override
@@ -53,11 +53,11 @@ public class Post {
         return departmentId;
     }
 
-    public Timestamp getCreated() {
+    public long getCreated() {
         return created;
     }
 
-    public Timestamp getUpdated() {
+    public long getUpdated() {
         return updated;
     }
 
@@ -67,5 +67,13 @@ public class Post {
 
     public String getDeleted() {
         return deleted;
+    }
+
+    public void setCreated() {
+        this.created = System.currentTimeMillis();
+    }
+
+    public void setUpdated() {
+        this.updated = System.currentTimeMillis();
     }
 }

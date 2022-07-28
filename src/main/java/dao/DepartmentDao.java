@@ -29,4 +29,9 @@ public interface DepartmentDao {
     void deleteAllPostsByDepartment(int departmentId);
 
     List<Department> search(String department);
+
+    //We already know these are a way of ensuring any class we create agrees to provide a minimum standard of code necessary to run correctly.
+//    The ability to inspect the code in the system and see object types is not reflection, but rather Type Introspection.
+//    Reflection is then the ability to make modifications at runtime by making use of introspection. The distinction is
+//    necessary here as some languages support introspection, but do not support reflection. One such example is C++
 }

@@ -7,8 +7,8 @@ public class Department {
     private String name;
     private String description;
     private int id;
-    private Timestamp created;
-    private Timestamp updated;
+    private long created;
+    private long updated;
     private String deleted;
 
     public Department(String name, String description){
@@ -21,7 +21,7 @@ public class Department {
         if (this == o) return true;
         if (!(o instanceof Department)) return false;
         Department that = (Department) o;
-        return getId() == that.getId() && getName().equals(that.getName()) && getDescription().equals(that.getDescription()) && getCreated().equals(that.getCreated()) && Objects.equals(getUpdated(), that.getUpdated()) && getDeleted().equals(that.getDeleted());
+        return getId() == that.getId() && getCreated() == that.getCreated() && getUpdated() == that.getUpdated() && getName().equals(that.getName()) && getDescription().equals(that.getDescription()) && getDeleted().equals(that.getDeleted());
     }
 
     @Override
@@ -45,15 +45,23 @@ public class Department {
         return id;
     }
 
-    public Timestamp getCreated() {
+    public long getCreated() {
         return created;
     }
 
-    public Timestamp getUpdated() {
+    public long getUpdated() {
         return updated;
     }
 
     public String getDeleted() {
         return deleted;
+    }
+
+    public void setCreated() {
+        this.created = System.currentTimeMillis();
+    }
+
+    public void setUpdated() {
+        this.updated = System.currentTimeMillis();
     }
 }

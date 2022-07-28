@@ -7,24 +7,24 @@ public class User {
     private String firstName;
     private String lastName;
     private String staffId;
-    private int departmentId;
+//    private int departmentId;
     private String position;
     private String phoneNo;
     private String email;
-    private Timestamp created;
-    private Timestamp updated;
+    private long created;
+    private long updated;
     private String deleted;
     private int id;
     private String photo;
 
-    public User(String firstName, String lastName, String staffId, String position, String phoneNo, String email, int departmentId, String photo){
+    public User(String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo){
         this.firstName = firstName;
         this.lastName = lastName;
         this.staffId = staffId;
         this.position = position;
         this.phoneNo = phoneNo;
         this.email = email;
-        this.departmentId = departmentId;
+//        this.departmentId = departmentId;
         this.photo = photo;
     }
 
@@ -33,12 +33,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return getDepartmentId() == user.getDepartmentId() && getId() == user.getId() && getFirstName().equals(user.getFirstName()) && getLastName().equals(user.getLastName()) && getStaffId().equals(user.getStaffId()) && getPosition().equals(user.getPosition()) && getPhoneNo().equals(user.getPhoneNo()) && getEmail().equals(user.getEmail()) && getCreated().equals(user.getCreated()) && Objects.equals(getUpdated(), user.getUpdated()) && getDeleted().equals(user.getDeleted()) && getPhoto().equals(user.getPhoto());
+        return getCreated() == user.getCreated() && getUpdated() == user.getUpdated() && getId() == user.getId() && getFirstName().equals(user.getFirstName()) && getLastName().equals(user.getLastName()) && getStaffId().equals(user.getStaffId()) && getPosition().equals(user.getPosition()) && getPhoneNo().equals(user.getPhoneNo()) && getEmail().equals(user.getEmail()) && getDeleted().equals(user.getDeleted()) && getPhoto().equals(user.getPhoto());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getStaffId(), getDepartmentId(), getPosition(), getPhoneNo(), getEmail(), getCreated(), getUpdated(), getDeleted(), getId(), getPhoto());
+        return Objects.hash(getFirstName(), getLastName(), getStaffId(), getPosition(), getPhoneNo(), getEmail(), getCreated(), getUpdated(), getDeleted(), getId(), getPhoto());
     }
 
     public void setId(int id) {
@@ -57,9 +57,9 @@ public class User {
         return staffId;
     }
 
-    public int getDepartmentId() {
-        return departmentId;
-    }
+//    public int getDepartmentId() {
+//        return departmentId;
+//    }
 
     public String getPosition() {
         return position;
@@ -73,11 +73,11 @@ public class User {
         return email;
     }
 
-    public Timestamp getCreated() {
+    public long getCreated() {
         return created;
     }
 
-    public Timestamp getUpdated() {
+    public long getUpdated() {
         return updated;
     }
 
@@ -91,5 +91,13 @@ public class User {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public void setCreated() {
+        this.created = System.currentTimeMillis();
+    }
+
+    public void setUpdated() {
+        this.updated = System.currentTimeMillis();
     }
 }
