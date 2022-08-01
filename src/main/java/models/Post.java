@@ -1,23 +1,24 @@
 package models;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Post {
     private String title;
     private String content;
-    private int userId;
-    private int departmentId;
+    private int user_id;
+    private int department_id;
+    private String type;
     private long created;
     private long updated;
     private int id;
     private String deleted;
 
-    public Post(String title, String content, int userId, int departmentId){
+    public Post(String title, String content, String type, int userId, int departmentId){
         this.title = title;
         this.content = content;
-        this.userId = userId;
-        this.departmentId = departmentId;
+        this.user_id = userId;
+        this.department_id = departmentId;
+        this.type = type;
     }
 
     @Override
@@ -25,12 +26,12 @@ public class Post {
         if (this == o) return true;
         if (!(o instanceof Post)) return false;
         Post post = (Post) o;
-        return getUserId() == post.getUserId() && getDepartmentId() == post.getDepartmentId() && getCreated() == post.getCreated() && getUpdated() == post.getUpdated() && getId() == post.getId() && getTitle().equals(post.getTitle()) && getContent().equals(post.getContent()) && getDeleted().equals(post.getDeleted());
+        return getUserId() == post.getUserId() && getDepartmentId() == post.getDepartmentId() && getCreated() == post.getCreated() && getUpdated() == post.getUpdated() && getId() == post.getId() && getTitle().equals(post.getTitle()) && getContent().equals(post.getContent()) && getType().equals(post.getType()) && getDeleted().equals(post.getDeleted());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTitle(), getContent(), getUserId(), getDepartmentId(), getCreated(), getUpdated(), getId(), getDeleted());
+        return Objects.hash(getTitle(), getContent(), getUserId(), getDepartmentId(), getType(), getCreated(), getUpdated(), getId(), getDeleted());
     }
 
     public void setId(int id) {
@@ -46,11 +47,11 @@ public class Post {
     }
 
     public int getUserId() {
-        return userId;
+        return user_id;
     }
 
     public int getDepartmentId() {
-        return departmentId;
+        return department_id;
     }
 
     public long getCreated() {
@@ -75,5 +76,9 @@ public class Post {
 
     public void setUpdated() {
         this.updated = System.currentTimeMillis();
+    }
+
+    public String getType() {
+        return type;
     }
 }

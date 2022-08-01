@@ -16,7 +16,7 @@ public class PostsDaoImpl implements PostDao {
 
     @Override
     public void add(Post post) {
-        String sql = "INSERT INTO posts (title, content, userId, departmentId, created) VALUES (:title, :content, :userId, :departmentId, now())"; //raw sql
+        String sql = "INSERT INTO posts (title, content, type, user_id, department_id, created) VALUES (:title, :content, :type, :userId, :departmentId, round(date_part('epoch', now())))"; //raw sql
         try(Connection con = sql2o.open()){ //try to open a connection
             int id = (int) con.createQuery(sql, true) //make a new variable
                     .bind(post) //map argument onto the query, so we can use information from it

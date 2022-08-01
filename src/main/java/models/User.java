@@ -1,30 +1,26 @@
 package models;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 public class User {
-    private String firstName;
-    private String lastName;
-    private String staffId;
-//    private int departmentId;
-    private String position;
-    private String phoneNo;
+    private int id;
+    private String first_name;
+    private String last_name;
+    private String staff_id;
+    private String user_position;
+    private String phone_no;
     private String email;
+    private String photo;
     private long created;
     private long updated;
     private String deleted;
-    private int id;
-    private String photo;
 
     public User(String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo){
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.staffId = staffId;
-        this.position = position;
-        this.phoneNo = phoneNo;
-        this.email = email;
-//        this.departmentId = departmentId;
+        this.first_name = firstName;
+        this.last_name = lastName;
+        this.staff_id = staffId;
+        this.user_position = position;
+        this.phone_no = phoneNo;
         this.photo = photo;
     }
 
@@ -33,44 +29,48 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return getCreated() == user.getCreated() && getUpdated() == user.getUpdated() && getId() == user.getId() && getFirstName().equals(user.getFirstName()) && getLastName().equals(user.getLastName()) && getStaffId().equals(user.getStaffId()) && getPosition().equals(user.getPosition()) && getPhoneNo().equals(user.getPhoneNo()) && getEmail().equals(user.getEmail()) && getDeleted().equals(user.getDeleted()) && getPhoto().equals(user.getPhoto());
+        return getId() == user.getId() && getCreated() == user.getCreated() && getUpdated() == user.getUpdated() && getFirst_name().equals(user.getFirst_name()) && getLast_name().equals(user.getLast_name()) && getStaff_id().equals(user.getStaff_id()) && getUser_position().equals(user.getUser_position()) && getPhone_no().equals(user.getPhone_no()) && getEmail().equals(user.getEmail()) && getPhoto().equals(user.getPhoto()) && getDeleted().equals(user.getDeleted());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getStaffId(), getPosition(), getPhoneNo(), getEmail(), getCreated(), getUpdated(), getDeleted(), getId(), getPhoto());
+        return Objects.hash(getId(), getFirst_name(), getLast_name(), getStaff_id(), getUser_position(), getPhone_no(), getEmail(), getPhoto(), getCreated(), getUpdated(), getDeleted());
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public int getId() {
+        return id;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public String getStaffId() {
-        return staffId;
+    public String getLast_name() {
+        return last_name;
     }
 
-//    public int getDepartmentId() {
-//        return departmentId;
-//    }
-
-    public String getPosition() {
-        return position;
+    public String getStaff_id() {
+        return staff_id;
     }
 
-    public String getPhoneNo() {
-        return phoneNo;
+    public String getUser_position() {
+        return user_position;
+    }
+
+    public String getPhone_no() {
+        return phone_no;
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 
     public long getCreated() {
@@ -83,21 +83,5 @@ public class User {
 
     public String getDeleted() {
         return deleted;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setCreated() {
-        this.created = System.currentTimeMillis();
-    }
-
-    public void setUpdated() {
-        this.updated = System.currentTimeMillis();
     }
 }

@@ -7,49 +7,65 @@ import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoImpl implements UserDao {
     private final Sql2o sql2o;
 
     public UserDaoImpl(Sql2o sql2o){
-        this.sql2o = sql2o; //making the sql2o object available everywhere so we can call methods in it
+        this.sql2o = sql2o;
     }
 
     @Override
     public void add(User user) {
-        String sql = "INSERT INTO users (firstName, lastName, staffId, position, phoneNo, email, departmentId, photo, created) VALUES (:firstName, :lastName, :StaffId, :position, :phoneNo, :email, :departmentId, :photo, now())"; //raw sql
-        try(Connection con = sql2o.open()){ //try to open a connection
-            int id = (int) con.createQuery(sql, true) //make a new variable
-                    .bind(user) //map my argument onto the query so we can use information from it
-                    .executeUpdate() //run it all
-                    .getKey(); //int id is now the row number (row key) //of db
-            user.setId(id); //update object to set id now from database
+        String sql = "INSERT INTO users (first_name, last_name, staff_id, user_position, phone_no, email, photo, created) VALUES (:first_name, :last_name, :staff_id, :user_position, :phone_no, :email, :photo, round(date_part('epoch', now())))"; //raw sql
+        try(Connection con = sql2o.open()){
+            int id = (int) con.createQuery(sql, true)
+                    .bind(user)
+                    .executeUpdate()
+                    .getKey();
+            user.setId(id);
         } catch (Sql2oException ex) {
-            System.out.println(ex); //oops we have an error!
+            System.out.println(ex);
         }
+
     }
 
     @Override
     public List<User> getAll() {
+        String sql = "SELECT * FROM users WHERE deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM users WHERE deleted = 'FALSE'") //raw sql
-                    .executeAndFetch(User.class); //fetch a list
+            return con.createQuery(sql)
+                    .executeAndFetch(User.class);
         }
     }
+
+    @Override
+    public List<Post> getAllPostsByUser(int id) {
+        String sql = "SELECT * FROM posts WHERE user_id = :id and deleted = 'FALSE'";
+        try(Connection con = sql2o.open()){
+            return con.createQuery(sql)
+                    .addParameter("id", id)
+                    .executeAndFetch(Post.class);
+        }
+    }
+
 
     @Override
     public User findById(int id) {
+        String sql = "SELECT * FROM users WHERE id = :id and deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM users WHERE id = :id and deleted = 'FALSE'")
-                    .addParameter("id", id) //key/value pair, key must match above
-                    .executeAndFetchFirst(User.class); //fetch an individual item
+            return con.createQuery(sql)
+                    .addParameter("id", id)
+                    .executeAndFetchFirst(User.class);
         }
+
     }
 
     @Override
-    public void update(int id, String firstName, String lastName, String staffId, String position,  String phoneNo, String email, int departmentId, String photo){
-        String sql = "UPDATE sites SET (firstName, lastName, staffId, position, phoneNo, email, departmentId, photo, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :departmentId, :photo, now()) WHERE id=:id";
+    public void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo) {
+        String sql = "UPDATE users SET (first_name, last_name, staff_id, user_position, phone_no, email, photo, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :photo, round(date_part('epoch', now()))) WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -59,22 +75,21 @@ public class UserDaoImpl implements UserDao {
                     .addParameter("position", position)
                     .addParameter("phoneNo", phoneNo)
                     .addParameter("email", email)
-                    .addParameter("departmentId", departmentId)
                     .addParameter("photo", photo)
                     .executeUpdate();
-        } catch (Sql2oException ex) {
+        }catch (Sql2oException ex) {
             System.out.println(ex);
         }
     }
 
     @Override
     public void deleteById(int id) {
-        String sql = "UPDATE users SET deleted='TRUE' WHERE id=:id";
-        try (Connection con = sql2o.open()) {
+        String sql = "UPDATE users SET deleted='TRUE' where id = :id";
+        try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
                     .executeUpdate();
-        } catch (Sql2oException ex){
+        }catch (Sql2oException ex) {
             System.out.println(ex);
         }
     }
@@ -82,45 +97,50 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void clearAllUsers() {
         String sql = "UPDATE users SET deleted='TRUE'";
-        try (Connection con = sql2o.open()) {
-            con.createQuery(sql)
-                    .executeUpdate();
-        } catch (Sql2oException ex){
-            System.out.println(ex);
-        }
-    }
-
-    @Override
-    public List<Post> getAllPostsByUser(int userId) {
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM posts WHERE userId = :userId and deleted = 'FALSE'")
-                    .addParameter("userId", userId)
-                    .executeAndFetch(Post.class);
+            con.createQuery(sql)
+                    .executeUpdate();
+        }catch (Sql2oException ex) {
+            System.out.println(ex);
         }
     }
 
-
     @Override
-    public void deleteAllPostsByUser(int userId) {
-        String sql = "UPDATE posts SET deleted='TRUE' where userId = :userId";
-        try (Connection con = sql2o.open()) {
+    public void deleteAllPostsByUser(int id) {
+        String sql = "UPDATE posts SET deleted='TRUE' WHERE user_id=:id";
+        try(Connection con = sql2o.open()){
             con.createQuery(sql)
-                    .addParameter("userId", userId)
+                    .addParameter("id", id)
                     .executeUpdate();
-        } catch (Sql2oException ex){
+        }catch (Sql2oException ex) {
             System.out.println(ex);
         }
+
     }
 
     @Override
     public List<User> search(String user) {
-        String sql = "SELECT * FROM users WHERE (lower(firstName) like '%'||:user||'%' OR lower(lastName) like '%'||:user||'%') and deleted='FALSE'";
+        String userLowercase = user.toLowerCase();
+        String sql = "SELECT * FROM users WHERE (lower(first_name) like '%'||:userLowercase||'%' OR lower(last_name) like '%'||:userLowercase||'%') and deleted='FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
-                    .addParameter("post", user)
+                    .addParameter("userLowercase", userLowercase)
                     .executeAndFetch(User.class);
         }
     }
 
+    @Override
+    public void addUserToDepartment(User user, Department department){
+        String sql = "INSERT INTO user_departments (user_id, department_id) VALUES (:userId, :departmentId)";
+        try (Connection con = sql2o.open()) {
+            con.createQuery(sql)
+                    .addParameter("userId", user.getId())
+                    .addParameter("departmentId", department.getId())
+                    .executeUpdate();
+        } catch (Sql2oException ex){
+            System.out.println(ex);
+        }
+
+    }
 
 }
