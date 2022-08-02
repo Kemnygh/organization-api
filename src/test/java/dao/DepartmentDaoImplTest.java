@@ -7,6 +7,8 @@ import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,6 +63,35 @@ class DepartmentDaoImplTest {
         int departmentId = newDepartment.getId();
         int dbObjectId = departmentDao.getAll().get(0).getId();
         assertEquals(departmentId, dbObjectId);
+    }
+
+    @Test
+    void specificById() throws Exception {
+        Department newDepartment = setUpDepartment();
+        int departmentId = newDepartment.getId();
+        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png", departmentId);
+        userDao.add(user);
+        User anotherUser = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png", departmentId);
+        userDao.add(anotherUser);
+        assertEquals(newDepartment.getName(),departmentDao.specificById(departmentId).get("name"));
+        assertEquals(newDepartment.getDescription(),departmentDao.specificById(departmentId).get("description"));
+        assertEquals(Integer.toString(departmentDao.getAllUsersByDepartment(departmentId).size()),departmentDao.specificById(departmentId).get("no of employees"));
+    }
+
+    @Test
+    void departmentDetails() throws Exception {
+        Department newDepartment = setUpDepartment();
+        int departmentId = newDepartment.getId();
+        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png", departmentId);
+        userDao.add(user);
+        User anotherUser = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png", departmentId);
+        userDao.add(anotherUser);
+        DepartmentalPost post = new DepartmentalPost("TGIF", "Friday fun day", user.getId(), departmentId);
+        departmentPostDao.add(post);
+        DepartmentalPost anotherPost = new DepartmentalPost("Election Day", "Tuesday 9th August 2022", anotherUser.getId(), departmentId);
+        departmentPostDao.add(anotherPost);
+        assertEquals(newDepartment.getName(),departmentDao.departmentDetails(departmentId).get("name"));
+        assertEquals(3,departmentDao.departmentDetails(departmentId).size());
     }
 
     @Test

@@ -9,7 +9,9 @@ import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DepartmentDaoImpl implements DepartmentDao {
     private final Sql2o sql2o;
@@ -47,6 +49,75 @@ public class DepartmentDaoImpl implements DepartmentDao {
                     .addParameter("id", id) //key/value pair, key must match above
                     .executeAndFetchFirst(Department.class); //fetch an individual item
         }
+    }
+
+//    @Override
+//    public Department specificById(int id) {
+//        try(Connection con = sql2o.open()){
+//            return con.createQuery("SELECT name, description, COUNT(distinct staff_id)"users" FROM departments dep" +
+//                            " join users usr on dep.id = usr.department_id WHERE dep.id = :id and dep.deleted = 'FALSE' and usr.deleted = 'FALSE'" +
+//                            "group by name, description")
+//                    .addParameter("id", id) //key/value pair, key must match above
+//                    .executeAndFetchFirst(Department.class); //fetch an individual item
+//        }
+//    }
+
+    @Override
+    public  Map<String, String> specificById(int id) {
+        Map<String, String> map = new HashMap<String, String>();
+
+        String countQuery = "SELECT count(distinct staff_id) FROM users WHERE department_id = :id";
+        String nameQuery = "SELECT name FROM departments WHERE id = :id";
+        String descQuery = "SELECT description FROM departments WHERE id = :id";
+
+        try(Connection con = sql2o.open()){
+            List<String> departmentName = con.createQuery(nameQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(String.class);
+            map.put("name", departmentName.get(0));
+
+            List<String> departmentDescription = con.createQuery(descQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(String.class);
+            map.put("description", departmentDescription.get(0));
+
+            List<Integer> numberOfUsers = con.createQuery(countQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(Integer.class);
+            map.put("no of employees", Integer.toString(numberOfUsers.get(0)));
+        } catch (Sql2oException ex){
+            System.out.println(ex);
+        }
+        return map;
+    }
+
+    @Override
+    public  Map<String, Object> departmentDetails(int id) {
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        String departmentQuery = "SELECT name FROM departments WHERE id = :id";
+        String usersQuery = "SELECT * FROM users WHERE department_id = :id";
+        String postsQuery = "SELECT * FROM posts WHERE department_id = :id";
+
+        try(Connection con = sql2o.open()){
+            List<String> departmentName = con.createQuery(departmentQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(String.class);
+            map.put("name", departmentName.get(0));
+
+            List<User> users = con.createQuery(usersQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(User.class);
+            map.put("users", users);
+
+            List<DepartmentalPost> posts = con.createQuery(postsQuery)
+                    .addParameter("id", id)
+                    .executeAndFetch(DepartmentalPost.class);
+            map.put("posts", posts);
+        } catch (Sql2oException ex){
+            System.out.println(ex);
+        }
+        return map;
     }
 
     @Override

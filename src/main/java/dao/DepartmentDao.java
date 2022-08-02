@@ -6,6 +6,7 @@ import models.Post;
 import models.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DepartmentDao {
     // LIST
@@ -17,6 +18,10 @@ public interface DepartmentDao {
 
     // READ
     Department findById(int id);
+
+    Map<String, String> specificById(int id);
+
+    Map<String, Object> departmentDetails(int id);
 
     // UPDATE
     void update(int id, String name, String description);

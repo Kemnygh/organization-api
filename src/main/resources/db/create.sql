@@ -7,18 +7,6 @@ CREATE DATABASE organization_api_test WITH TEMPLATE organization_api;
 select * from posts;
 DROP DATABASE organization_api_test;
 
---TODO: remove department ID from users and create a standalone table --
-CREATE TABLE user_departments (id serial PRIMARY KEY , user_id INTEGER, department_id INTEGER);
+truncate table departments;
 
-INSERT INTO departments (name, description, created) VALUES ('Marketing', 'Department in charge of promoting the business',123456789);
-
-UPDATE departments SET deleted='TRUE' WHERE id=1;
-
-truncate table posts;
-
-DROP table users;
-
-CREATE TABLE users (id serial PRIMARY KEY, first_name VARCHAR, last_name VARCHAR, staff_no VARCHAR UNIQUE, user_position VARCHAR, phone_no VARCHAR UNIQUE, email VARCHAR UNIQUE, photo VARCHAR, created BIGINT, updated BIGINT, deleted VARCHAR DEFAULT 'FALSE');
-
-
-
+--TODO: drop user_departments

@@ -4,6 +4,9 @@ import dao.DepartmentalPostsDaoImpl;
 import dao.GeneralPostsDaoImpl;
 import dao.UserDaoImpl;
 import models.Department;
+import models.DepartmentalPost;
+import models.GeneralPost;
+import models.User;
 import org.sql2o.Sql2o;
 
 
@@ -42,8 +45,62 @@ public class App {
 
         get("/departments/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
-            int restaurantId = Integer.parseInt(req.params("id"));
-            return gson.toJson(departmentDao.findById(restaurantId));
+            int departmentId = Integer.parseInt(req.params("id"));
+            return gson.toJson(departmentDao.findById(departmentId));
+        });
+
+        post("/user/new", "application/json", (req, res) -> {
+            User user = gson.fromJson(req.body(), User.class);
+            userDao.add(user);
+            res.status(201);
+            return gson.toJson(user);
+        });
+
+        post("/news/general/new", "application/json", (req, res) -> {
+            GeneralPost post = gson.fromJson(req.body(), GeneralPost.class);
+            post.setType();
+            generalPostsDao.add(post);
+            res.status(201);
+            return gson.toJson(post);
+        });
+
+        post("/news/departmental/new", "application/json", (req, res) -> {
+            DepartmentalPost post = gson.fromJson(req.body(), DepartmentalPost.class);
+            post.setType();
+            departmentalPostsDao.add(post);
+            res.status(201);
+            return gson.toJson(post);
+        });
+
+        get("/users/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int userId = Integer.parseInt(req.params("id"));
+            return gson.toJson(userDao.findById(userId));
+        });
+
+        get("/departments/:id/specific", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int departmentId = Integer.parseInt(req.params("id"));
+            return gson.toJson(departmentDao.specificById(departmentId));
+        });
+
+        get("/departments/:id/users", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int departmentId = Integer.parseInt(req.params("id"));
+            return gson.toJson(departmentDao.getAllUsersByDepartment(departmentId));
+        });
+
+        get("/departments/:id/details", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int departmentId = Integer.parseInt(req.params("id"));
+            return gson.toJson(departmentDao.departmentDetails(departmentId));
+        });
+
+
+
+        //FILTERS
+        after((req, res) ->{
+            res.type("application/json");
         });
     }
 

@@ -10,4 +10,12 @@ public class DepartmentalPost extends Post {
         this.department_id = departmentId;
         this.type = DATABASE_TYPE;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType() {
+        this.type = "departmental";
+    }
 }
