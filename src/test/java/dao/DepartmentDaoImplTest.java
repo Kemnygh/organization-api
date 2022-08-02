@@ -92,12 +92,10 @@ class DepartmentDaoImplTest {
 
     @Test
     void getAllUsersByDepartment() {
-        Department newDepartment = setUpDepartment();
-        int departmentId = newDepartment.getId();
         User newUser = setUpUser();
         User anotherUser = setUpAnotherUser();
-        userDao.addUserToDepartment(newUser, newDepartment);
-        userDao.addUserToDepartment(anotherUser, newDepartment);
+        int departmentId = newUser.getDepartment_id();
+        assertEquals(newUser.getDepartment_id(),anotherUser.getDepartment_id());
         assertEquals(2,departmentDao.getAllUsersByDepartment(departmentId).size());
 
     }
@@ -106,29 +104,23 @@ class DepartmentDaoImplTest {
     void getAllPostsByDepartment() {
         Post newPost = addPost();
         Post anotherPost = addAnotherPost();
-       assertEquals(newPost.getDepartmentId(),anotherPost.getDepartmentId());
-       assertEquals(2,  departmentDao.getAllPostsByDepartment(newPost.getDepartmentId()).size());
+       assertEquals(1,  departmentDao.getAllPostsByDepartment(anotherPost.getDepartmentId()).size());
     }
 
     @Test
     void deleteAllUsersByDepartment() {
-        Department newDepartment = setUpDepartment();
-        int departmentId = newDepartment.getId();
         User newUser = setUpUser();
         User anotherUser = setUpAnotherUser();
-        userDao.addUserToDepartment(newUser, newDepartment);
-        userDao.addUserToDepartment(anotherUser, newDepartment);
+        int departmentId = newUser.getDepartment_id();
         departmentDao.deleteAllUsersByDepartment(departmentId);
         assertEquals(0,departmentDao.getAllUsersByDepartment(departmentId).size());
     }
 
     @Test
     void deleteAllPostsByDepartment() {
-        Post newPost = addPost();
-        Post anotherPost = addAnotherPost();
-        departmentDao.deleteAllPostsByDepartment(newPost.getDepartmentId());
-        assertEquals(newPost.getDepartmentId(),anotherPost.getDepartmentId());
-        assertEquals(0,  departmentDao.getAllPostsByDepartment(newPost.getDepartmentId()).size());
+        DepartmentalPost anotherPost = addAnotherPost();
+        departmentDao.deleteAllPostsByDepartment(anotherPost.getDepartmentId());
+        assertEquals(0,  departmentDao.getAllPostsByDepartment(anotherPost.getDepartmentId()).size());
     }
 
     @Test
@@ -153,13 +145,13 @@ class DepartmentDaoImplTest {
     }
 
     public User setUpUser (){
-        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png");
+        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png", 1);
         userDao.add(user);
         return user;
     }
 
     public User setUpAnotherUser (){
-        User user = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png");
+        User user = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png", 1);
         userDao.add(user);
         return user;
     }

@@ -1,6 +1,7 @@
 package dao;
 
 import models.Department;
+import models.DepartmentalPost;
 import models.Post;
 import models.User;
 import org.sql2o.Connection;
@@ -85,41 +86,50 @@ public class DepartmentDaoImpl implements DepartmentDao {
         }
     }
 
+//    @Override
+//    public List<User> getAllUsersByDepartment(int departmentId) {
+//        ArrayList<User> users = new ArrayList<>();
+//
+//        String joinQuery = "SELECT user_id FROM user_departments WHERE department_id = :departmentId";
+//
+//        try(Connection con = sql2o.open()){
+//            List<Integer> allUsers = con.createQuery(joinQuery)
+//                    .addParameter("departmentId", departmentId)
+//                    .executeAndFetch(Integer.class);
+//            for (Integer userId : allUsers){
+//                String userQuery = "SELECT * FROM users WHERE id = :userId";
+//                users.add(
+//                        con.createQuery(userQuery)
+//                                .addParameter("userId", userId)
+//                                .executeAndFetchFirst(User.class));
+//            } //why are we doing a second sql query - set?
+//        } catch (Sql2oException ex){
+//            System.out.println(ex);
+//        }
+//        return users;
+//    }
+
     @Override
     public List<User> getAllUsersByDepartment(int departmentId) {
-        ArrayList<User> users = new ArrayList<>();
-
-        String joinQuery = "SELECT user_id FROM user_departments WHERE department_id = :departmentId";
-
         try(Connection con = sql2o.open()){
-            List<Integer> allUsers = con.createQuery(joinQuery)
+            return con.createQuery("SELECT * FROM users WHERE department_id = :departmentId and deleted = 'FALSE'")
                     .addParameter("departmentId", departmentId)
-                    .executeAndFetch(Integer.class);
-            for (Integer userId : allUsers){
-                String userQuery = "SELECT * FROM users WHERE id = :userId";
-                users.add(
-                        con.createQuery(userQuery)
-                                .addParameter("userId", userId)
-                                .executeAndFetchFirst(User.class));
-            } //why are we doing a second sql query - set?
-        } catch (Sql2oException ex){
-            System.out.println(ex);
+                    .executeAndFetch(User.class);
         }
-        return users;
     }
 
     @Override
-    public List<Post> getAllPostsByDepartment(int departmentId) {
+    public List<DepartmentalPost> getAllPostsByDepartment(int departmentId) {
         try(Connection con = sql2o.open()){
             return con.createQuery("SELECT * FROM posts WHERE department_id = :departmentId and deleted = 'FALSE'")
                     .addParameter("departmentId", departmentId)
-                    .executeAndFetch(Post.class);
+                    .executeAndFetch(DepartmentalPost.class);
         }
     }
 
     @Override
     public void deleteAllUsersByDepartment(int departmentId) {
-        String sql = "DELETE from user_departments WHERE department_id = :departmentId";
+        String sql = "UPDATE users SET (deleted, updated) =('TRUE', date_part('epoch', now())*1000) where department_id = :departmentId";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("departmentId", departmentId)
@@ -131,7 +141,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public void deleteAllPostsByDepartment(int departmentId) {
-        String sql = "UPDATE posts SET deleted='TRUE' where department_id = :departmentId";
+        String sql = "UPDATE posts SET (deleted, updated) =('TRUE', date_part('epoch', now())*1000) where department_id = :departmentId";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("departmentId", departmentId)

@@ -12,14 +12,14 @@ public interface UserDao {
     // CREATE
     void add(User user);
 
-    void addUserToDepartment(User user, Department department);
+//    void addUserToDepartment(User user, Department department);
 
 
     // READ
     User findById(int id);
 
     // UPDATE
-    void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo);
+    void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo, int departmentId);
 
     // DELETE
     void deleteById(int id);

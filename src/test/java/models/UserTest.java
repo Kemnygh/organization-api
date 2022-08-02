@@ -1,6 +1,5 @@
 package models;
 
-import dao.DepartmentDaoImpl;
 import dao.DepartmentalPostsDaoImpl;
 import dao.GeneralPostsDaoImpl;
 import dao.UserDaoImpl;
@@ -16,16 +15,18 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DepartmentTest {
+class UserTest {
+
     private static Connection conn;
-    private static DepartmentDaoImpl departmentDao;
+
+    private static UserDaoImpl userDao;
 
 
     @BeforeAll
     public static void setUp() throws Exception {
         String connectionString = "jdbc:postgresql://localhost:5432/organization_api_test";
         Sql2o sql2o = new Sql2o(connectionString, "postgres", "root");
-        departmentDao = new DepartmentDaoImpl(sql2o);
+        userDao = new UserDaoImpl(sql2o);
         conn = sql2o.open();
     }
 
@@ -41,31 +42,55 @@ class DepartmentTest {
     }
 
     @Test
-    void NewDepartmentObjectGetsCorrectlyCreated() throws Exception {
-        Department department = setUpDepartment();
-        assertNotNull(department);
+    void getFirst_name() {
+        User user = setUpUser();
+        assertEquals("John", user.getFirst_name());
     }
 
     @Test
-    void getName() {
-        Department department = setUpDepartment();
-        assertEquals("Finance",department.getName());
+    void getLast_name() {
+        User user = setUpUser();
+        assertEquals("Doe", user.getLast_name());
     }
 
     @Test
-    void getDescription() {
-        Department department = setUpDepartment();
-        assertEquals("Department to run all monetary aspects of the business",department.getDescription());
+    void getStaff_id() {
+        User user = setUpUser();
+        assertEquals("EK001", user.getStaff_id());
+    }
+
+    @Test
+    void getUser_position() {
+        User user = setUpUser();
+        assertEquals("Manager", user.getUser_position());
+    }
+
+    @Test
+    void getPhone_no() {
+        User user = setUpUser();
+        assertEquals("012345678", user.getPhone_no());
+    }
+
+    @Test
+    void getEmail() {
+        User user = setUpUser();
+        assertEquals("john.doe@org.com", user.getEmail());
+    }
+
+    @Test
+    void getPhoto() {
+        User user = setUpUser();
+        assertEquals("resources/assets/images/test.png", user.getPhoto());
     }
 
     @Test
     void createdDateSetsAccurately() throws Exception{
         String datePatternToUse = "MM/dd/yyyy @ K:mm a"; //see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
         SimpleDateFormat sdf = new SimpleDateFormat(datePatternToUse);
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
+        User user = setUpUser();
+        int userId = user.getId();
         long currentTime = System.currentTimeMillis();
-        long timestamp = departmentDao.findById(departmentId).getCreated();
+        long timestamp = userDao.findById(userId).getCreated();
         assertEquals(sdf.format(currentTime), sdf.format(timestamp));
 
     }
@@ -74,26 +99,38 @@ class DepartmentTest {
     void updatedDateSetsAccurately() throws Exception{
         String datePatternToUse = "MM/dd/yyyy @ K:mm a"; //see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
         SimpleDateFormat sdf = new SimpleDateFormat(datePatternToUse);
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
-        departmentDao.update(departmentId,"New Finance", "Monetary Services");
+        User user = setUpAnotherUser();
+        int userId = user.getId();
+        userDao.update(userId,"Janet", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png", 1);
         long currentTime = System.currentTimeMillis();
-        long timestamp = departmentDao.findById(departmentId).getUpdated();
+        long timestamp = userDao.findById(userId).getUpdated();
         assertEquals(sdf.format(currentTime), sdf.format(timestamp));
     }
 
     @Test
     void getDeleted() throws Exception{
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
-        assertEquals("FALSE", departmentDao.findById(departmentId).getDeleted());
+        User user = setUpUser();
+        int userId = user.getId();
+        assertEquals("FALSE", userDao.findById(userId).getDeleted());
+    }
+
+    @Test
+    void getDepartment_id() {
+        User user = setUpUser();
+        assertEquals(1, user.getDepartment_id());
     }
 
     //helpers
-    public Department setUpDepartment (){
-        Department department =  new Department("Finance", "Department to run all monetary aspects of the business");
-        departmentDao.add(department);
-        return department;
+    public User setUpUser() {
+        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png", 1);
+        userDao.add(user);
+        return user;
+    }
+
+    public User setUpAnotherUser() {
+        User user = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png", 1);
+        userDao.add(user);
+        return user;
     }
 
     public void clearDB() {
@@ -106,18 +143,20 @@ class DepartmentTest {
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .executeUpdate();
-        }try (Connection con = sql2o.open()) {
+        }
+        try (Connection con = sql2o.open()) {
             con.createQuery(sql1)
                     .executeUpdate();
-        }try (Connection con = sql2o.open()) {
+        }
+        try (Connection con = sql2o.open()) {
             con.createQuery(sql2)
                     .executeUpdate();
-        }try (Connection con = sql2o.open()) {
+        }
+        try (Connection con = sql2o.open()) {
             con.createQuery(sql3)
                     .executeUpdate();
-        } catch (Sql2oException ex){
+        } catch (Sql2oException ex) {
             System.out.println(ex);
         }
     }
-
 }

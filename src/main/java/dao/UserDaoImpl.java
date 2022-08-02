@@ -1,8 +1,6 @@
 package dao;
 
-import models.Department;
-import models.Post;
-import models.User;
+import models.*;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
@@ -19,7 +17,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void add(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, staff_id, user_position, phone_no, email, photo, created) VALUES (:first_name, :last_name, :staff_id, :user_position, :phone_no, :email, :photo, date_part('epoch', now())*1000)"; //raw sql
+        String sql = "INSERT INTO users (first_name, last_name, staff_id, user_position, phone_no, email, photo, department_id, created) VALUES (:first_name, :last_name, :staff_id, :user_position, :phone_no, :email, :photo, :department_id, date_part('epoch', now())*1000)"; //raw sql
         try(Connection con = sql2o.open()){
             int id = (int) con.createQuery(sql, true)
                     .bind(user)
@@ -43,12 +41,24 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<Post> getAllPostsByUser(int id) {
-        String sql = "SELECT * FROM posts WHERE user_id = :id and deleted = 'FALSE'";
+        List<Post> allPosts = new ArrayList<>();
+
         try(Connection con = sql2o.open()){
-            return con.createQuery(sql)
+            String sqlGeneral = "SELECT * FROM posts WHERE user_id = :id and type='general' and deleted = 'FALSE'";
+            List<GeneralPost> generalPosts =  con.createQuery(sqlGeneral)
                     .addParameter("id", id)
-                    .executeAndFetch(Post.class);
+                    .throwOnMappingFailure(false)
+                    .executeAndFetch(GeneralPost.class);
+            allPosts.addAll(generalPosts);
+
+            String sqlDepartmental = "SELECT * FROM posts WHERE user_id = :id and type='departmental' and deleted = 'FALSE'";
+            List<DepartmentalPost> departmentalPosts =  con.createQuery(sqlDepartmental)
+                    .addParameter("id", id)
+                    .throwOnMappingFailure(false)
+                    .executeAndFetch(DepartmentalPost.class);
+            allPosts.addAll(departmentalPosts);
         }
+        return allPosts;
     }
 
 
@@ -64,8 +74,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo) {
-        String sql = "UPDATE users SET (first_name, last_name, staff_id, user_position, phone_no, email, photo, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :photo, date_part('epoch', now())*1000) WHERE id=:id";
+    public void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo, int departmentId) {
+        String sql = "UPDATE users SET (first_name, last_name, staff_id, user_position, phone_no, email, photo, department_id, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :photo, :departmentId, date_part('epoch', now())*1000) WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -76,6 +86,7 @@ public class UserDaoImpl implements UserDao {
                     .addParameter("phoneNo", phoneNo)
                     .addParameter("email", email)
                     .addParameter("photo", photo)
+                    .addParameter("departmentId", departmentId)
                     .executeUpdate();
         }catch (Sql2oException ex) {
             System.out.println(ex);
@@ -129,18 +140,18 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    @Override
-    public void addUserToDepartment(User user, Department department){
-        String sql = "INSERT INTO user_departments (user_id, department_id) VALUES (:userId, :departmentId)";
-        try (Connection con = sql2o.open()) {
-            con.createQuery(sql)
-                    .addParameter("userId", user.getId())
-                    .addParameter("departmentId", department.getId())
-                    .executeUpdate();
-        } catch (Sql2oException ex){
-            System.out.println(ex);
-        }
-
-    }
+//    @Override
+//    public void addUserToDepartment(User user, Department department){
+//        String sql = "INSERT INTO user_departments (user_id, department_id) VALUES (:userId, :departmentId)";
+//        try (Connection con = sql2o.open()) {
+//            con.createQuery(sql)
+//                    .addParameter("userId", user.getId())
+//                    .addParameter("departmentId", department.getId())
+//                    .executeUpdate();
+//        } catch (Sql2oException ex){
+//            System.out.println(ex);
+//        }
+//
+//    }
 
 }

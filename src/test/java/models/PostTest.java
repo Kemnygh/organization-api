@@ -16,16 +16,20 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DepartmentTest {
+class PostTest {
+
     private static Connection conn;
-    private static DepartmentDaoImpl departmentDao;
+
+    private static GeneralPostsDaoImpl generalPostsDao;
+    private static DepartmentalPostsDaoImpl departmentPostDao;
 
 
     @BeforeAll
     public static void setUp() throws Exception {
         String connectionString = "jdbc:postgresql://localhost:5432/organization_api_test";
         Sql2o sql2o = new Sql2o(connectionString, "postgres", "root");
-        departmentDao = new DepartmentDaoImpl(sql2o);
+        generalPostsDao = new GeneralPostsDaoImpl(sql2o);
+        departmentPostDao = new DepartmentalPostsDaoImpl(sql2o);
         conn = sql2o.open();
     }
 
@@ -41,31 +45,37 @@ class DepartmentTest {
     }
 
     @Test
-    void NewDepartmentObjectGetsCorrectlyCreated() throws Exception {
-        Department department = setUpDepartment();
-        assertNotNull(department);
+    void getTitle() {
+        GeneralPost post = addGenPost();
+        assertEquals("Ways of working", post.getTitle());
     }
 
     @Test
-    void getName() {
-        Department department = setUpDepartment();
-        assertEquals("Finance",department.getName());
+    void getContent() {
+        DepartmentalPost post = addDepPost();
+        assertEquals("To incrementally refine our culture we need to start here", post.getContent());
     }
 
     @Test
-    void getDescription() {
-        Department department = setUpDepartment();
-        assertEquals("Department to run all monetary aspects of the business",department.getDescription());
+    void getUserId() {
+        GeneralPost post = addGenPost();
+        assertEquals(1, post.getUserId());
+    }
+
+    @Test
+    void getDepartmentId() {
+        DepartmentalPost post = addDepPost();
+        assertEquals(1, post.getDepartmentId());
     }
 
     @Test
     void createdDateSetsAccurately() throws Exception{
         String datePatternToUse = "MM/dd/yyyy @ K:mm a"; //see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
         SimpleDateFormat sdf = new SimpleDateFormat(datePatternToUse);
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
+        DepartmentalPost post = addDepPost();
+        int postId = post.getId();
         long currentTime = System.currentTimeMillis();
-        long timestamp = departmentDao.findById(departmentId).getCreated();
+        long timestamp = departmentPostDao.findById(postId).getCreated();
         assertEquals(sdf.format(currentTime), sdf.format(timestamp));
 
     }
@@ -74,26 +84,42 @@ class DepartmentTest {
     void updatedDateSetsAccurately() throws Exception{
         String datePatternToUse = "MM/dd/yyyy @ K:mm a"; //see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
         SimpleDateFormat sdf = new SimpleDateFormat(datePatternToUse);
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
-        departmentDao.update(departmentId,"New Finance", "Monetary Services");
+        GeneralPost post = addGenPost();
+        int postId = post.getId();
+        generalPostsDao.update(postId,"New Title", "Setting up changes on posts");
         long currentTime = System.currentTimeMillis();
-        long timestamp = departmentDao.findById(departmentId).getUpdated();
+        long timestamp = generalPostsDao.findById(postId).getUpdated();
         assertEquals(sdf.format(currentTime), sdf.format(timestamp));
     }
 
     @Test
     void getDeleted() throws Exception{
-        Department department = setUpDepartment();
-        int departmentId = department.getId();
-        assertEquals("FALSE", departmentDao.findById(departmentId).getDeleted());
+        GeneralPost post = addGenPost();
+        int postId = post.getId();
+        assertEquals("FALSE", generalPostsDao.findById(postId).getDeleted());
+    }
+
+    @Test
+    void getType() {
+        GeneralPost genPost = addGenPost();
+        int genPostId = genPost.getId();
+        DepartmentalPost depPost = addDepPost();
+        int depPostId = depPost.getId();
+        assertEquals("general", generalPostsDao.findById(genPostId).getType());
+        assertEquals("departmental", departmentPostDao.findById(depPostId).getType());
     }
 
     //helpers
-    public Department setUpDepartment (){
-        Department department =  new Department("Finance", "Department to run all monetary aspects of the business");
-        departmentDao.add(department);
-        return department;
+    public DepartmentalPost addDepPost (){
+        DepartmentalPost post = new DepartmentalPost("Ways of working", "To incrementally refine our culture we need to start here", 1,1);
+        departmentPostDao.add(post);
+        return post;
+    }
+
+    public GeneralPost addGenPost (){
+        models.GeneralPost post = new GeneralPost("Ways of working", "To incrementally refine our culture we need to start here", 1);
+        generalPostsDao.add(post);
+        return post;
     }
 
     public void clearDB() {
@@ -119,5 +145,4 @@ class DepartmentTest {
             System.out.println(ex);
         }
     }
-
 }

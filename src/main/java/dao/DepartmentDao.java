@@ -1,6 +1,7 @@
 package dao;
 
 import models.Department;
+import models.DepartmentalPost;
 import models.Post;
 import models.User;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public interface DepartmentDao {
     // LIST
     List<Department> getAll();
-    List<Post> getAllPostsByDepartment(int departmentId);
+    List<DepartmentalPost> getAllPostsByDepartment(int departmentId);
 
     // CREATE
     void add(Department department);

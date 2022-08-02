@@ -11,17 +11,20 @@ public class User {
     private String phone_no;
     private String email;
     private String photo;
+     private int department_id;
     private long created;
     private long updated;
     private String deleted;
 
-    public User(String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo){
+    public User(String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo, int departmentId){
         this.first_name = firstName;
         this.last_name = lastName;
         this.staff_id = staffId;
         this.user_position = position;
         this.phone_no = phoneNo;
+        this.email = email;
         this.photo = photo;
+        this.department_id = departmentId;
     }
 
     @Override
@@ -29,12 +32,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return getId() == user.getId() && getCreated() == user.getCreated() && getUpdated() == user.getUpdated() && getFirst_name().equals(user.getFirst_name()) && getLast_name().equals(user.getLast_name()) && getStaff_id().equals(user.getStaff_id()) && getUser_position().equals(user.getUser_position()) && getPhone_no().equals(user.getPhone_no()) && getEmail().equals(user.getEmail()) && getPhoto().equals(user.getPhoto()) && getDeleted().equals(user.getDeleted());
+        return getId() == user.getId() && getDepartment_id() == user.getDepartment_id() && getCreated() == user.getCreated() && getUpdated() == user.getUpdated() && getFirst_name().equals(user.getFirst_name()) && getLast_name().equals(user.getLast_name()) && getStaff_id().equals(user.getStaff_id()) && getUser_position().equals(user.getUser_position()) && getPhone_no().equals(user.getPhone_no()) && getEmail().equals(user.getEmail()) && getPhoto().equals(user.getPhoto()) && getDeleted().equals(user.getDeleted());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getFirst_name(), getLast_name(), getStaff_id(), getUser_position(), getPhone_no(), getEmail(), getPhoto(), getCreated(), getUpdated(), getDeleted());
+        return Objects.hash(getId(), getFirst_name(), getLast_name(), getStaff_id(), getUser_position(), getPhone_no(), getEmail(), getPhoto(), getDepartment_id(), getCreated(), getUpdated(), getDeleted());
     }
 
     public void setId(int id) {
@@ -83,5 +86,9 @@ public class User {
 
     public String getDeleted() {
         return deleted;
+    }
+
+    public int getDepartment_id() {
+        return department_id;
     }
 }

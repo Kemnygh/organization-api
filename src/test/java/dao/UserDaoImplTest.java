@@ -68,7 +68,7 @@ class UserDaoImplTest {
     void userUpdatesCorrectly() {
         User newUser = setUpUser();
         int userId = newUser.getId();
-        userDao.update(userId,"Johnson", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png");
+        userDao.update(userId,"Johnson", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png",1);
         assertNotEquals(newUser.getFirst_name(), userDao.findById(userId).getFirst_name());
     }
 
@@ -90,7 +90,7 @@ class UserDaoImplTest {
 
     @Test
     void getAllPostsByUserReturnsUsersPosts() {
-        Post newPost = addPost();
+        GeneralPost newPost = addPost();
         int userId = newPost.getUserId();
         assertEquals(1,  userDao.getAllPostsByUser(userId).size() );
     }
@@ -110,17 +110,6 @@ class UserDaoImplTest {
         assertEquals(1,userDao.search(newUser.getLast_name()).size());
     }
 
-    @Test
-    void addUserToDepartmentMapsUserToDepartmentCorrectly() {
-        Department newDepartment = setUpDepartment();
-        User newUser = setUpUser();
-        userDao.addUserToDepartment(newUser,newDepartment);
-        assertEquals(1,departmentDao.getAllUsersByDepartment(newDepartment.getId()).size());
-
-    }
-
-
-
     //method helpers
     public GeneralPost addPost (){
         GeneralPost post = new GeneralPost("Ways of working", "To incrementally refine our culture we need to start here", 1);
@@ -136,13 +125,13 @@ class UserDaoImplTest {
 
 
     public User setUpUser (){
-        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png");
+        User user = new User("John", "Doe", "EK001", "Manager", "012345678", "john.doe@org.com", "resources/assets/images/test.png",1);
         userDao.add(user);
         return user;
     }
 
     public User setUpAnotherUser (){
-        User user = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png");
+        User user = new User("Jane", "Doe", "EK002", "Manager", "123456789", "jane.doe@org.com", "resources/assets/images/test.png",1);
         userDao.add(user);
         return user;
     }
