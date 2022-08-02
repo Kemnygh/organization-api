@@ -19,14 +19,13 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public void add(Department department) {
-        String sql = "INSERT INTO departments (name, description, created) VALUES (:name, :description, :created)"; //raw sql
+        String sql = "INSERT INTO departments (name, description, created) VALUES (:name, :description, date_part('epoch', now())*1000)"; //raw sql
         try(Connection con = sql2o.open()){ //try to open a connection
             int id = (int) con.createQuery(sql, true) //make a new variable
                     .bind(department) //map my argument onto the query so we can use information from it
                     .executeUpdate() //run it all
                     .getKey(); //int id is now the row number (row key) //of db
             department.setId(id);
-            department.setCreated();//update object to set id now from database
         } catch (Sql2oException ex) {
             System.out.println(ex); //oops we have an error!
         }
@@ -51,7 +50,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public void update(int id, String newDepartment, String description){
-        String sql = "UPDATE departments SET (name, description, updated) = (:name, :description, round( date_part( 'epoch', now() ) )) WHERE id=:id";
+        String sql = "UPDATE departments SET (name, description, updated) = (:name, :description, date_part('epoch', now())*1000) WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("name", newDepartment)
@@ -65,7 +64,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public void deleteById(int id) {
-        String sql = "UPDATE departments SET (deleted, updated) = ('TRUE', round(date_part('epoch',now()))) WHERE id=:id";
+        String sql = "UPDATE departments SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000) WHERE id=:id";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -77,7 +76,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public void clearAllDepartments() {
-        String sql = "UPDATE departments SET deleted='TRUE'";
+        String sql = "UPDATE departments SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000)";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .executeUpdate();
@@ -144,10 +143,11 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public List<Department> search(String department) {
-        String sql = "SELECT * FROM departments WHERE lower(name) like '%'||:department||'%' and deleted='FALSE'";
+        String depLowercase = department.toLowerCase();
+        String sql = "SELECT * FROM departments WHERE lower(name) like '%'||:depLowercase||'%' and deleted='FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
-                    .addParameter("department", department)
+                    .addParameter("depLowercase", depLowercase)
                     .executeAndFetch(Department.class);
         }
     }

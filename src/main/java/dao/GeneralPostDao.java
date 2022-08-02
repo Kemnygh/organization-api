@@ -1,18 +1,19 @@
 package dao;
 
+import models.GeneralPost;
 import models.Post;
 
 import java.util.List;
 
-public interface PostDao {
-    List<Post> getAll();
+public interface GeneralPostDao {
+    List<GeneralPost> getAll();
 
     // CREATE
-    void add(Post post);
+    void add(GeneralPost post);
 
 
     // READ
-    Post findById(int id);
+    GeneralPost findById(int id);
 
     // UPDATE
     void update(int id,String title, String content);
@@ -21,5 +22,5 @@ public interface PostDao {
     void deleteById(int id);
     void clearAllPosts();
 
-    List<Post> search(String post);
+    List<GeneralPost> search(String post);
 }

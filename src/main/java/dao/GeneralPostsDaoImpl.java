@@ -1,5 +1,6 @@
 package dao;
 
+import models.GeneralPost;
 import models.Post;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -7,16 +8,16 @@ import org.sql2o.Sql2oException;
 
 import java.util.List;
 
-public class PostsDaoImpl implements PostDao {
+public class GeneralPostsDaoImpl implements GeneralPostDao {
     private final Sql2o sql2o;
 
-    public PostsDaoImpl(Sql2o sql2o){
+    public GeneralPostsDaoImpl(Sql2o sql2o){
         this.sql2o = sql2o;
     }
 
     @Override
-    public void add(Post post) {
-        String sql = "INSERT INTO posts (title, content, type, user_id, department_id, created) VALUES (:title, :content, :type, :userId, :departmentId, round(date_part('epoch', now())))"; //raw sql
+    public void add(GeneralPost post) {
+        String sql = "INSERT INTO posts (title, content, type, user_id, created) VALUES (:title, :content, :type, :userId, date_part('epoch', now())*1000)"; //raw sql
         try(Connection con = sql2o.open()){ //try to open a connection
             int id = (int) con.createQuery(sql, true) //make a new variable
                     .bind(post) //map argument onto the query, so we can use information from it
@@ -30,29 +31,29 @@ public class PostsDaoImpl implements PostDao {
     }
 
     @Override
-    public List<Post> getAll() {
+    public List<GeneralPost> getAll() {
         String sql = "SELECT * FROM posts WHERE deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
-                    .executeAndFetch(Post.class);
+                    .executeAndFetch(GeneralPost.class);
         }
     }
 
 
     @Override
-    public Post findById(int id) {
+    public GeneralPost findById(int id) {
         String sql = "SELECT * FROM posts WHERE id = :id and deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
                     .addParameter("id", id)
-                    .executeAndFetchFirst(Post.class);
+                    .executeAndFetchFirst(GeneralPost.class);
         }
 
     }
 
     @Override
     public void update(int id, String title, String content) {
-        String sql = "UPDATE posts SET (title, content, updated) = (:title, :content, now()) WHERE id=:id";
+        String sql = "UPDATE posts SET (title, content, updated) = (:title, :content, date_part('epoch', now())*1000) WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -66,7 +67,7 @@ public class PostsDaoImpl implements PostDao {
 
     @Override
     public void deleteById(int id) {
-        String sql = "UPDATE posts SET deleted='TRUE' where id = :id";
+        String sql = "UPDATE posts SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000) where id = :id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -78,7 +79,7 @@ public class PostsDaoImpl implements PostDao {
 
     @Override
     public void clearAllPosts() {
-        String sql = "UPDATE posts SET deleted='TRUE'";
+        String sql = "UPDATE posts SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000)";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .executeUpdate();
@@ -89,12 +90,13 @@ public class PostsDaoImpl implements PostDao {
     }
 
     @Override
-    public List<Post> search(String post) {
-        String sql = "SELECT * FROM posts WHERE lower(title) like '%'||:post||'%' and deleted='FALSE'";
+    public List<GeneralPost> search(String post) {
+        String postLowercase = post.toLowerCase();
+        String sql = "SELECT * FROM posts WHERE lower(title) like '%'||:postLowercase||'%' and deleted='FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
-                    .addParameter("post", post)
-                    .executeAndFetch(Post.class);
+                    .addParameter("postLowercase", postLowercase)
+                    .executeAndFetch(GeneralPost.class);
         }
     }
 }

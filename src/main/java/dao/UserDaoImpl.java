@@ -19,7 +19,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void add(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, staff_id, user_position, phone_no, email, photo, created) VALUES (:first_name, :last_name, :staff_id, :user_position, :phone_no, :email, :photo, round(date_part('epoch', now())))"; //raw sql
+        String sql = "INSERT INTO users (first_name, last_name, staff_id, user_position, phone_no, email, photo, created) VALUES (:first_name, :last_name, :staff_id, :user_position, :phone_no, :email, :photo, date_part('epoch', now())*1000)"; //raw sql
         try(Connection con = sql2o.open()){
             int id = (int) con.createQuery(sql, true)
                     .bind(user)
@@ -65,7 +65,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void update(int id,String firstName, String lastName, String staffId, String position, String phoneNo, String email, String photo) {
-        String sql = "UPDATE users SET (first_name, last_name, staff_id, user_position, phone_no, email, photo, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :photo, round(date_part('epoch', now()))) WHERE id=:id";
+        String sql = "UPDATE users SET (first_name, last_name, staff_id, user_position, phone_no, email, photo, updated) = (:firstName, :lastName, :staffId, :position, :phoneNo, :email, :photo, date_part('epoch', now())*1000) WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -84,7 +84,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteById(int id) {
-        String sql = "UPDATE users SET deleted='TRUE' where id = :id";
+        String sql = "UPDATE users SET (deleted, updated) =('TRUE', date_part('epoch', now())*1000) where id = :id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -96,7 +96,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void clearAllUsers() {
-        String sql = "UPDATE users SET deleted='TRUE'";
+        String sql = "UPDATE users SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000)";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .executeUpdate();
@@ -107,7 +107,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteAllPostsByUser(int id) {
-        String sql = "UPDATE posts SET deleted='TRUE' WHERE user_id=:id";
+        String sql = "UPDATE posts SET (deleted, updated) = ('TRUE', date_part('epoch', now())*1000) WHERE user_id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("id", id)

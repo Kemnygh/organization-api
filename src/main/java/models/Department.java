@@ -56,12 +56,4 @@ public class Department {
     public String getDeleted() {
         return deleted;
     }
-
-    public void setCreated() {
-        this.created = System.currentTimeMillis();
-    }
-
-    public void setUpdated() {
-        this.updated = System.currentTimeMillis();
-    }
 }

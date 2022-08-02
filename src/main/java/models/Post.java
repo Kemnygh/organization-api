@@ -2,24 +2,17 @@ package models;
 
 import java.util.Objects;
 
-public class Post {
-    private String title;
-    private String content;
-    private int user_id;
-    private int department_id;
-    private String type;
-    private long created;
-    private long updated;
-    private int id;
-    private String deleted;
+public abstract class Post {
+    public String title;
+    public String content;
+    public int user_id;
+    public int department_id;
+    public String type;
+    public long created;
+    public long updated;
+    public int id;
+    public String deleted;
 
-    public Post(String title, String content, String type, int userId, int departmentId){
-        this.title = title;
-        this.content = content;
-        this.user_id = userId;
-        this.department_id = departmentId;
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -70,13 +63,6 @@ public class Post {
         return deleted;
     }
 
-    public void setCreated() {
-        this.created = System.currentTimeMillis();
-    }
-
-    public void setUpdated() {
-        this.updated = System.currentTimeMillis();
-    }
 
     public String getType() {
         return type;

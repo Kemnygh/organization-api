@@ -4,7 +4,7 @@ CREATE TABLE users (id serial PRIMARY KEY, first_name VARCHAR, last_name varchar
 CREATE TABLE posts (id serial PRIMARY KEY, title VARCHAR, content VARCHAR, type VARCHAR, user_id INTEGER, department_id INTEGER, created BIGINT, updated BIGINT, deleted VARCHAR DEFAULT 'FALSE');
 CREATE TABLE user_departments (id serial PRIMARY KEY , user_id INTEGER, department_id INTEGER);
 CREATE DATABASE organization_api_test WITH TEMPLATE organization_api;
-select * from user_departments;
+select * from posts;
 DROP DATABASE organization_api_test;
 
 --TODO: remove department ID from users and create a standalone table --
@@ -14,7 +14,7 @@ INSERT INTO departments (name, description, created) VALUES ('Marketing', 'Depar
 
 UPDATE departments SET deleted='TRUE' WHERE id=1;
 
-truncate table user_departments;
+truncate table posts;
 
 DROP table users;
 
