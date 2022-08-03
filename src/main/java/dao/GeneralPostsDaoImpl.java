@@ -32,7 +32,7 @@ public class GeneralPostsDaoImpl implements GeneralPostDao {
 
     @Override
     public List<GeneralPost> getAll() {
-        String sql = "SELECT * FROM posts WHERE deleted = 'FALSE'";
+        String sql = "SELECT * FROM posts WHERE type = 'general' and deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
                     .executeAndFetch(GeneralPost.class);

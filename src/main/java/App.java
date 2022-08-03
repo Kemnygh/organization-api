@@ -35,6 +35,8 @@ public class App {
         DepartmentalPostsDaoImpl departmentalPostsDao = new DepartmentalPostsDaoImpl(sql2o);
         Gson gson = new Gson();
 
+
+
         //post: route to create new department
         post("/departments/new", "application/json", (req, res) -> {
             List<Department> allDepartments = departmentDao.getAll();
@@ -78,6 +80,11 @@ public class App {
             else {
                 return "{\"message\":\"User Created Successfully.\"}";
             }
+        });
+
+        //get: route to get all users
+        get("/users", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            return gson.toJson(userDao.getAll());//send it back to be displayed
         });
 
         //post: route to create general news
@@ -172,6 +179,16 @@ public class App {
                 userDao.deleteById(userId);
                 return "{\"message\":\"User Deleted Successfully.\"}";
             }
+        });
+
+        //get: route to get all general posts
+        get("/general/posts", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            return gson.toJson(generalPostsDao.getAll());//send it back to be displayed
+        });
+
+        //get: route to get all departmental posts
+        get("/departmental/posts", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            return gson.toJson(departmentalPostsDao.getAll());//send it back to be displayed
         });
 
         //get: route to soft delete general news by marking deleted field as TRUE

@@ -33,7 +33,7 @@ public class DepartmentalPostsDaoImpl implements DepartmentalPostDao {
 
     @Override
     public List<DepartmentalPost> getAll() {
-        String sql = "SELECT * FROM posts WHERE deleted = 'FALSE'";
+        String sql = "SELECT * FROM posts WHERE type = 'departmental' and deleted = 'FALSE'";
         try(Connection con = sql2o.open()){
             return con.createQuery(sql)
                     .executeAndFetch(DepartmentalPost.class);

@@ -7,8 +7,6 @@ import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

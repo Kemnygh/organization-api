@@ -140,18 +140,5 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-//    @Override
-//    public void addUserToDepartment(User user, Department department){
-//        String sql = "INSERT INTO user_departments (user_id, department_id) VALUES (:userId, :departmentId)";
-//        try (Connection con = sql2o.open()) {
-//            con.createQuery(sql)
-//                    .addParameter("userId", user.getId())
-//                    .addParameter("departmentId", department.getId())
-//                    .executeUpdate();
-//        } catch (Sql2oException ex){
-//            System.out.println(ex);
-//        }
-//
-//    }
 
 }
