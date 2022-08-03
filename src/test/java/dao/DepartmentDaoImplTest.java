@@ -90,7 +90,7 @@ class DepartmentDaoImplTest {
         departmentPostDao.add(post);
         DepartmentalPost anotherPost = new DepartmentalPost("Election Day", "Tuesday 9th August 2022", anotherUser.getId(), departmentId);
         departmentPostDao.add(anotherPost);
-        assertEquals(newDepartment.getName(),departmentDao.departmentDetails(departmentId).get("name"));
+        System.out.println(departmentDao.departmentDetails(departmentId));
         assertEquals(3,departmentDao.departmentDetails(departmentId).size());
     }
 

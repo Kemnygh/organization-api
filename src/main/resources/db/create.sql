@@ -4,7 +4,7 @@ CREATE TABLE users (id serial PRIMARY KEY, first_name VARCHAR, last_name varchar
 CREATE TABLE posts (id serial PRIMARY KEY, title VARCHAR, content VARCHAR, type VARCHAR, user_id INTEGER, department_id INTEGER, created BIGINT, updated BIGINT, deleted VARCHAR DEFAULT 'FALSE');
 CREATE TABLE user_departments (id serial PRIMARY KEY , user_id INTEGER, department_id INTEGER);
 CREATE DATABASE organization_api_test WITH TEMPLATE organization_api;
-select * from posts;
+select * from users;
 DROP DATABASE organization_api_test;
 
 truncate table departments;

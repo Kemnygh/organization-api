@@ -51,17 +51,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
         }
     }
 
-//    @Override
-//    public Department specificById(int id) {
-//        try(Connection con = sql2o.open()){
-//            return con.createQuery("SELECT name, description, COUNT(distinct staff_id)"users" FROM departments dep" +
-//                            " join users usr on dep.id = usr.department_id WHERE dep.id = :id and dep.deleted = 'FALSE' and usr.deleted = 'FALSE'" +
-//                            "group by name, description")
-//                    .addParameter("id", id) //key/value pair, key must match above
-//                    .executeAndFetchFirst(Department.class); //fetch an individual item
-//        }
-//    }
-
     @Override
     public  Map<String, String> specificById(int id) {
         Map<String, String> map = new HashMap<String, String>();
@@ -95,15 +84,15 @@ public class DepartmentDaoImpl implements DepartmentDao {
     public  Map<String, Object> departmentDetails(int id) {
         Map<String, Object> map = new HashMap<String, Object>();
 
-        String departmentQuery = "SELECT name FROM departments WHERE id = :id";
+        String departmentQuery = "SELECT * FROM departments WHERE id = :id";
         String usersQuery = "SELECT * FROM users WHERE department_id = :id";
         String postsQuery = "SELECT * FROM posts WHERE department_id = :id";
 
         try(Connection con = sql2o.open()){
-            List<String> departmentName = con.createQuery(departmentQuery)
+            List<Department> departmentName = con.createQuery(departmentQuery)
                     .addParameter("id", id)
-                    .executeAndFetch(String.class);
-            map.put("name", departmentName.get(0));
+                    .executeAndFetch(Department.class);
+            map.put("department", departmentName.get(0));
 
             List<User> users = con.createQuery(usersQuery)
                     .addParameter("id", id)
@@ -156,29 +145,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
             System.out.println(ex);
         }
     }
-
-//    @Override
-//    public List<User> getAllUsersByDepartment(int departmentId) {
-//        ArrayList<User> users = new ArrayList<>();
-//
-//        String joinQuery = "SELECT user_id FROM user_departments WHERE department_id = :departmentId";
-//
-//        try(Connection con = sql2o.open()){
-//            List<Integer> allUsers = con.createQuery(joinQuery)
-//                    .addParameter("departmentId", departmentId)
-//                    .executeAndFetch(Integer.class);
-//            for (Integer userId : allUsers){
-//                String userQuery = "SELECT * FROM users WHERE id = :userId";
-//                users.add(
-//                        con.createQuery(userQuery)
-//                                .addParameter("userId", userId)
-//                                .executeAndFetchFirst(User.class));
-//            } //why are we doing a second sql query - set?
-//        } catch (Sql2oException ex){
-//            System.out.println(ex);
-//        }
-//        return users;
-//    }
 
     @Override
     public List<User> getAllUsersByDepartment(int departmentId) {
