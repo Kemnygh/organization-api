@@ -3,12 +3,15 @@ import dao.DepartmentDaoImpl;
 import dao.DepartmentalPostsDaoImpl;
 import dao.GeneralPostsDaoImpl;
 import dao.UserDaoImpl;
+import exceptions.ApiException;
 import models.Department;
 import models.DepartmentalPost;
 import models.GeneralPost;
 import models.User;
 import org.sql2o.Sql2o;
 
+
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -34,10 +37,16 @@ public class App {
 
         //post: route to create new department
         post("/departments/new", "application/json", (req, res) -> {
+            List<Department> allDepartments = departmentDao.getAll();
             Department department = gson.fromJson(req.body(), Department.class);
             departmentDao.add(department);
             res.status(201);
-            return gson.toJson(department);
+            if (res.status() != 201){
+                throw new ApiException(404, "Something Went wrong");
+            }
+            else {
+                return "{\"message\":\"Department Created Successfully.\"}";
+            }
         });
 
         //get: route to get all departments
@@ -49,7 +58,13 @@ public class App {
         get("/departments/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int departmentId = Integer.parseInt(req.params("id"));
-            return gson.toJson(departmentDao.findById(departmentId));
+            Department department = departmentDao.findById(departmentId);
+            if (department == null){
+                throw new ApiException(404, "Department does not exist");
+            }
+            else {
+                return gson.toJson(departmentDao.findById(departmentId));
+            }
         });
 
         //post: route to create new user
@@ -57,7 +72,12 @@ public class App {
             User user = gson.fromJson(req.body(), User.class);
             userDao.add(user);
             res.status(201);
-            return gson.toJson(user);
+            if (res.status() != 201){
+                throw new ApiException(404, "Something Went wrong");
+            }
+            else {
+                return "{\"message\":\"User Created Successfully.\"}";
+            }
         });
 
         //post: route to create general news
@@ -66,7 +86,12 @@ public class App {
             post.setType();
             generalPostsDao.add(post);
             res.status(201);
-            return gson.toJson(post);
+            if (res.status() != 201){
+                throw new ApiException(404, "Something Went wrong");
+            }
+            else {
+                return "{\"message\":\"General Post Created Successfully.\"}";
+            }
         });
 
         //post: route to create departmental news
@@ -75,59 +100,107 @@ public class App {
             post.setType();
             departmentalPostsDao.add(post);
             res.status(201);
-            return gson.toJson(post);
+            if (res.status() != 201){
+                throw new ApiException(404, "Something Went wrong");
+            }
+            else {
+                return "{\"message\":\"Departmental Post Created Successfully.\"}";
+            }
         });
 
         //get: route to get individual user
         get("/users/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int userId = Integer.parseInt(req.params("id"));
-            return gson.toJson(userDao.findById(userId));
+            User user = userDao.findById(userId);
+            if (user == null){
+                throw new ApiException(404, "User does not exist");
+            }
+            else {
+                return gson.toJson(userDao.findById(userId));
+            }
         });
 
         //get: route to get department name, description & number of employees
         get("/departments/:id/specific", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int departmentId = Integer.parseInt(req.params("id"));
-            return gson.toJson(departmentDao.specificById(departmentId));
+            Department department = departmentDao.findById(departmentId);
+            if (department == null){
+                throw new ApiException(404, "Department does not exist");
+            }
+            else {
+                return gson.toJson(departmentDao.specificById(departmentId));
+            }
         });
 
         //get: route to get all employees in a department
         get("/departments/:id/users", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int departmentId = Integer.parseInt(req.params("id"));
-            return gson.toJson(departmentDao.getAllUsersByDepartment(departmentId));
+            Department department = departmentDao.findById(departmentId);
+            if (department == null){
+                throw new ApiException(404, "Department does not exist");
+            }
+            else {
+                return gson.toJson(departmentDao.getAllUsersByDepartment(departmentId));
+            }
         });
 
         //get: route to get all details for a department plus employees and news
         get("/departments/:id/details", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int departmentId = Integer.parseInt(req.params("id"));
-            return gson.toJson(departmentDao.departmentDetails(departmentId));
+            Department department = departmentDao.findById(departmentId);
+            if (department == null){
+                throw new ApiException(404, "Department does not exist");
+            }
+            else {
+                return gson.toJson(departmentDao.departmentDetails(departmentId));
+            }
         });
 
         //get: route to soft delete user by marking deleted field as TRUE
         get("/user/:id/delete", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int userId = Integer.parseInt(req.params("id"));
-            userDao.deleteById(userId);
-            return "{\"message\":\"User Deleted.\"}";
+            User user = userDao.findById(userId);
+            if (user == null){
+                throw new ApiException(404, "User does not exist");
+            }
+            else {
+                userDao.deleteById(userId);
+                return "{\"message\":\"User Deleted Successfully.\"}";
+            }
         });
 
         //get: route to soft delete general news by marking deleted field as TRUE
         get("/general/post/:id/delete", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int postId = Integer.parseInt(req.params("id"));
-            generalPostsDao.deleteById(postId);
-            return "{\"message\":\"Post Deleted.\"}";
+            GeneralPost post = generalPostsDao.findById(postId);
+            if (post == null){
+                throw new ApiException(404, "User does not exist");
+            }
+            else {
+                generalPostsDao.deleteById(postId);
+                return "{\"message\":\"Post Deleted Successfully.\"}";
+            }
         });
 
         //get: route to soft delete departmental news by marking deleted field as TRUE
         get("/department/post/:id/delete", "application/json", (req, res) -> { //accept a request in format JSON from an app
             res.type("application/json");
             int postId = Integer.parseInt(req.params("id"));
-            departmentalPostsDao.deleteById(postId);
-            return "{\"message\":\"Post Deleted.\"}";
+            DepartmentalPost post = departmentalPostsDao.findById(postId);
+            if (post == null){
+                throw new ApiException(404, "User does not exist");
+            }
+            else {
+                departmentalPostsDao.deleteById(postId);
+                return "{\"message\":\"Post Deleted Successfully.\"}";
+            }
+
         });
 
 
